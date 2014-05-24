@@ -21,5 +21,5 @@ To make things happen right away, check prereqs, clone, then run:
  - ant 1.9+
  - ivy 2.3+
 
-2. Make sure java and ant are in your path.
+2. Make sure java and ant are in your `$PATH`.
 3. Make sure the ivy jars are in ant's classpath (ie, in one of ant's lib folders, `$HOME/.ant/lib` is a good choice).
