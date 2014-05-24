@@ -33,15 +33,18 @@
   </target>
 
   <target name="script" depends="fatjar" description=".... embed fatjar into a script">
+    <echo message="Catting stub"/>
     <concat destfile="${dist.dir}/${fatjar.script.name}">
       <filelist dir="${rsrc.dir}" files="${fatjar.script.stub}"/>
     </concat>
+    <echo message="Catting jar"/>
     <concat destfile="${dist.dir}/${fatjar.script.name}"
             append="true"
             binary="true"
             >
       <filelist dir="${dist.dir}" files="${fatjar.file}"/>
     </concat>
+    <echo message="Setting permissions"/>
     <chmod file="${dist.dir}/${fatjar.script.name}" perm="+x"/>
   </target>
 
