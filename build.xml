@@ -1,7 +1,25 @@
 <?xml version="1.0"?>
 <project name="SimpleConsoleExample" default="resolve" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
+  <property name="src.dir" value="src"/>
+  <property name="resource.dir" value="${src.dir}/main/resources"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="dist.dir" value="dist"/>
+
+  <property name="build.dir" value="build"/>
+  <property name="build.classes" value="${build.dir}/classes"/>
+
+  <property name="fatjar.script.stub" value="stub.sh"/>
+
+  <!-- Properties after the include may be set in the include -->
   <property file="build.properties"/>
+
+  <property name="fatjar.file" value="fat.jar"/>
+  <property name="fatjar.script.name" value="app"/>
+
+  <property name="java.version" value="1.8"/>
+  <property name="build.compiler" value="modern"/>
+  <property name="compression" value="0"/>
 
   <path id="project.class.path">
     <pathelement path="${lib.dir}/*"/>
@@ -24,9 +42,9 @@
   <target name="compile" description=".... clean build dir and compile">
     <delete dir="${build.dir}"/>
     <mkdir dir="${build.dir}"/>
-    <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.classes}"/>
     <javac srcdir="${src.dir}"
-           destdir="${build.dir}/classes"
+           destdir="${build.classes}"
            classpathref="project.class.path"
            includeAntRuntime="false"
            />
@@ -35,7 +53,7 @@
   <target name="script" depends="fatjar" description=".... embed fatjar into a script">
     <echo message="Catting stub"/>
     <concat destfile="${dist.dir}/${fatjar.script.name}">
-      <filelist dir="${rsrc.dir}" files="${fatjar.script.stub}"/>
+      <filelist dir="${resource.dir}" files="${fatjar.script.stub}"/>
     </concat>
     <echo message="Catting jar"/>
     <concat destfile="${dist.dir}/${fatjar.script.name}"
@@ -61,7 +79,7 @@
         <attribute name="Class-Path" value="."/>
       </manifest>
       <fileset dir="${build.dir}/classes"/>
-      <fileset file="${rsrc.dir}/logback.xml"/>
+      <fileset file="${resource.dir}/logback.xml"/>
       <zipfileset src="${build.dir}/libs.jar">
         <exclude name="**/META-INF/"/>
       </zipfileset>
