@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project name="SimpleConsoleExample" default="resolve" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property file="build.properties"/>
+
+  <path id="project.class.path">
+    <pathelement path="${lib.dir}/*"/>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="clean" description=".... delete all generated files and dirs">
+    <delete dir="${lib.dir}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <target name="resolve" description=".... resolve / retrieve deps">
+    <delete dir="${lib.dir}"/>
+    <ivy:retrieve/>
+  </target>
+
+  <target name="compile" description=".... clean build dir and compile">
+    <delete dir="${build.dir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}/classes"/>
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}/classes"
+           classpathref="project.class.path"
+           includeAntRuntime="false"
+           />
+  </target>
+
+  <target name="script" depends="fatjar" description=".... embed fatjar into a script">
+    <concat destfile="${dist.dir}/${fatjar.script.name}">
+      <filelist dir="${rsrc.dir}" files="${fatjar.script.stub}"/>
+    </concat>
+    <concat destfile="${dist.dir}/${fatjar.script.name}"
+            append="true"
+            binary="true"
+            >
+      <filelist dir="${dist.dir}" files="${fatjar.file}"/>
+    </concat>
+    <chmod file="${dist.dir}/${fatjar.script.name}" perm="+x"/>
+  </target>
+
+  <target name="fatjar" depends="compile" description=".... compile a fatjar jar">
+    <delete dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="${build.dir}/libs.jar">
+      <zipgroupfileset dir="${lib.dir}"/>
+    </jar>
+    <jar destfile="${dist.dir}/${fatjar.file}"
+         filesetmanifest="mergewithoutmain">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}"/>
+        <attribute name="Class-Path" value="."/>
+      </manifest>
+      <fileset dir="${build.dir}/classes"/>
+      <fileset file="${rsrc.dir}/logback.xml"/>
+      <zipfileset src="${build.dir}/libs.jar">
+        <exclude name="**/META-INF/"/>
+      </zipfileset>
+    </jar>
+  </target>
+
+</project>
